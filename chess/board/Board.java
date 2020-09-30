@@ -2,6 +2,9 @@ package chess.board;
 
 import chess.Alliance;
 import chess.pieces.*;
+import chess.player.BlackPlayer;
+import chess.player.Player;
+import chess.player.WhitePlayer;
 
 import java.util.*;
 
@@ -11,10 +14,40 @@ public class Board {
     private final Collection<Piece> whitePieces;
     private final Collection<Piece> blackPieces;
 
+    private final WhitePlayer whitePlayer;
+    private final BlackPlayer blackPlayer;
+
     private Board (Builder builder) {
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
+
+        final Collection<Move> whiteStandardLegalMoves = calculateLegalMoves(whitePieces);
+        final Collection<Move> blackStandardLegalMoves = calculateLegalMoves(blackPieces);
+
+        whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+    }
+
+    @Override
+    public String toString(){
+        final StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < BoardUtils.NUM_TILES; i++) {
+            final String tileText = gameBoard.get(i).toString();
+            builder.append(String.format("%3s", tileText));
+            if ((i + 1) % BoardUtils.NUM_TILES_PER_ROW == 0) {
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
+
+    private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
+        final List<Move> legalMoves = new ArrayList<>();
+        for (final Piece piece : pieces) {
+            legalMoves.addAll(piece.calculateLegalMoves(this));
+        }
+        return Collections.unmodifiableList(legalMoves);
     }
 
     private static Collection<Piece> calculateActivePieces(final List<Tile> gameBoard, final Alliance alliance) {
@@ -84,12 +117,29 @@ public class Board {
         return builder.build();
     }
 
+    public Collection<Piece> getWhitePieces() {
+        return whitePieces;
+    }
+
+    public Collection<Piece> getBlackPieces() {
+        return blackPieces;
+    }
+
+    public Player getWhitePlayer() {
+        return whitePlayer;
+    }
+
+    public Player getBlackPlayer() {
+        return blackPlayer;
+    }
+
     public static class Builder {
 
         Map<Integer, Piece> boardConfig;
         Alliance nextMoveMaker;
 
         public Builder() {
+            boardConfig = new HashMap<>();
         }
 
         public Builder setPiece(final Piece piece) {

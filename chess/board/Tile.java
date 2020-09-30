@@ -38,8 +38,13 @@ public abstract class Tile {
         }
 
         @Override
+        public String toString() {
+            return "-";
+        }
+
+        @Override
         public boolean isTileOccupied() {
-            return true;
+            return false;
         }
 
         @Override
@@ -58,8 +63,14 @@ public abstract class Tile {
         }
 
         @Override
+        public String toString() {
+            return pieceOnTile.getPieceAlliance().isBlack() ? pieceOnTile.toString().toLowerCase() :
+                    pieceOnTile.toString();
+        }
+
+        @Override
         public boolean isTileOccupied() {
-            return false;
+            return true;
         }
 
         @Override
