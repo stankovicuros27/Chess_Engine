@@ -1,5 +1,9 @@
 package chess;
 
+import chess.player.BlackPlayer;
+import chess.player.Player;
+import chess.player.WhitePlayer;
+
 public enum Alliance {
     WHITE {
         @Override
@@ -15,6 +19,11 @@ public enum Alliance {
         @Override
         public boolean isBlack() {
             return false;
+        }
+
+        @Override
+        public Player choosePlayer(WhitePlayer whitePlayer, BlackPlayer blackPlayer) {
+            return whitePlayer;
         }
     },
     BLACK {
@@ -32,9 +41,15 @@ public enum Alliance {
         public boolean isBlack() {
             return true;
         }
+
+        @Override
+        public Player choosePlayer(WhitePlayer whitePlayer, BlackPlayer blackPlayer) {
+            return blackPlayer;
+        }
     };
 
     public abstract int getDirection();
     public abstract boolean isWhite();
     public abstract boolean isBlack();
+    public abstract Player choosePlayer(WhitePlayer whitePlayer, BlackPlayer blackPlayer);
 }

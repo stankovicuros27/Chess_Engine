@@ -18,7 +18,7 @@ public class Board {
     private final BlackPlayer blackPlayer;
     private final Player currentPlayer;
 
-    private Board (Builder builder) {
+    private Board (final Builder builder) {
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
@@ -28,7 +28,7 @@ public class Board {
 
         whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
-        this.currentPlayer = null;
+        this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
     }
 
     @Override
@@ -117,6 +117,13 @@ public class Board {
         builder.setMoveMaker(Alliance.WHITE);
         //build the board
         return builder.build();
+    }
+
+    public Iterable<Move> getAllLegalMoves() {
+        List<Move> legalMoves = new ArrayList<>();
+        legalMoves.addAll(whitePlayer.getLegalMoves());
+        legalMoves.addAll(blackPlayer.getLegalMoves());
+        return Collections.unmodifiableList(legalMoves);
     }
 
     public Collection<Piece> getWhitePieces() {
