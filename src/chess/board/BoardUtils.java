@@ -1,5 +1,7 @@
 package chess.board;
 
+import java.util.Map;
+
 public class BoardUtils {
 
     public static final int NUM_TILES = 64;
@@ -18,6 +20,9 @@ public class BoardUtils {
     public static final boolean[] THIRD_RANK = initRow(40);
     public static final boolean[] SECOND_RANK = initRow(48);
     public static final boolean[] FIRST_RANK = initRow(56);
+
+    public static String[] ALGEBREIC_NOTATION = initializeAlgebreicNotation();
+    public static final Map<String, Integer> POSITION_TO_COORDINATE = initializePositionToCoordinateMap();
 
     private static boolean[] initRow(int rowNumber) {
         final boolean[] row = new boolean[NUM_TILES];
@@ -43,5 +48,13 @@ public class BoardUtils {
 
     public static boolean isValidCoordinate(final int coordinate) {
         return coordinate >= 0 && coordinate < NUM_TILES;
+    }
+
+    public static int getCoordinateAtPosition(String position) {
+        return POSITION_TO_COORDINATE.get(position);
+    }
+
+    public static int getPositionAtCoordinate(int coordinate) {
+        return ALGEBREIC_NOTATION[coordinate];
     }
 }
