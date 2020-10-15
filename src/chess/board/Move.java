@@ -27,7 +27,7 @@ public abstract class Move {
     }
 
     @Override
-    public boolean equals (Object other) {
+    public boolean equals(final Object other) {
         if (this == other) {
             return true;
         }
@@ -97,7 +97,7 @@ public abstract class Move {
 
         @Override
         public boolean equals(final Object other) {
-            return this.equals(other) || other instanceof MajorMove && super.equals(other);
+            return this == other || other instanceof MajorMove && super.equals(other);
         }
 
         @Override
@@ -190,6 +190,11 @@ public abstract class Move {
             builder.setMoveMaker(board.getCurrentPlayer().getOpponent().getAlliance());
             return builder.build();
         }
+
+        @Override
+        public String toString() {
+            return BoardUtils.getPositionAtCoordinate(destinationCoordinate);
+        }
     }
 
     static abstract class CastleMove extends Move {
@@ -259,12 +264,27 @@ public abstract class Move {
     public static final class NullMove extends Move {
 
         public NullMove() {
-            super(null, null, -1);
+            super(null,-1);
+        }
+
+        @Override
+        public int getCurrentCoordinate() {
+            return -1;
+        }
+
+        @Override
+        public int getDestinationCoordinate() {
+            return -1;
         }
 
         @Override
         public Board execute() {
-            throw new RuntimeException("Cannot execute NULL move");
+            throw new RuntimeException("cannot execute null move!");
+        }
+
+        @Override
+        public String toString() {
+            return "Null Move";
         }
     }
 

@@ -30,12 +30,16 @@ public class Table {
     private final JFrame gameFrame;
     private final BoardPanel boardPanel;
     private Board chessBoard;
-    private BoardDirection boardDirection;
-    private boolean highlightLegalMoves;
+    private final GameHistoryPanel gameHistoryPanel;
+    private final TakenPiecesPanel takenPiecesPanel;
+    private final MoveLog moveLog;
 
     private Tile sourceTile;
     private Tile destinationTile;
     private Piece humanMovedPiece;
+
+    private boolean highlightLegalMoves;
+    private BoardDirection boardDirection;
 
     private static final Dimension OUTER_FRAME_DIMENSION = new Dimension(750, 750);
     private static final Dimension BOARD_PANEL_DIMENSION = new Dimension(500, 450);
@@ -52,12 +56,17 @@ public class Table {
         gameFrame.setSize(OUTER_FRAME_DIMENSION);
         gameFrame.setLocationRelativeTo(null);
         chessBoard = Board.createStandardBoard();
+        gameHistoryPanel = new GameHistoryPanel();
+        takenPiecesPanel = new TakenPiecesPanel();
         boardPanel = new BoardPanel();
+        moveLog = new MoveLog();
         boardDirection = BoardDirection.NORMAL;
         highlightLegalMoves = true;
-        gameFrame.add(boardPanel, BorderLayout.CENTER);
-        gameFrame.setVisible(true);
 
+        gameFrame.add(takenPiecesPanel, BorderLayout.WEST);
+        gameFrame.add(boardPanel, BorderLayout.CENTER);
+        gameFrame.add(gameHistoryPanel, BorderLayout.EAST);
+        gameFrame.setVisible(true);
     }
 
     private JMenuBar createMenuBar() {
@@ -238,7 +247,7 @@ public class Table {
                             final MoveTransition transition = chessBoard.getCurrentPlayer().makeMove(move);
                             if (transition.getMoveStatus().isDone()) {
                                 chessBoard = transition.getTransitionBoard();
-                                //TODO add the move to movlog
+                                moveLog.addMove(move);
                             }
                             sourceTile = null;
                             destinationTile = null;
@@ -247,7 +256,9 @@ public class Table {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                boardPanel.drawBoard(chessBoard); 
+                                gameHistoryPanel.redo(chessBoard, moveLog);
+                                takenPiecesPanel.redo(moveLog);
+                                boardPanel.drawBoard(chessBoard);
                             }
                         });
                     }
